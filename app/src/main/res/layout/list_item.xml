@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="70dp">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/vr_list_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/ic_baseline_play_circle_filled"
+                app:tint="@color/black" />
+
+            <TextView
+                android:id="@+id/vr_list_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="100dp"
+                android:layout_marginTop="0dp"
+                android:text="Recording 1"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/vr_list_date"
+                android:layout_below="@id/vr_list_name"
+                android:layout_width="wrap_content"
+                android:layout_marginRight="20dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="100dp"
+                android:layout_marginTop="0dp"
+                android:text="10/19/2020"
+                android:textSize="10dp"
+                android:textStyle="bold" />
+            <ImageView
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="20dp"
+                android:layout_alignParentRight="true"
+                android:id="@+id/vr_delete_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/ic_baseline_delete"
+                app:tint="@color/colorPrimary" />
+
+            <!--     <ImageView
+                     android:layout_alignParentRight="true"
+                     android:id="@+id/vr_list_play"
+                     android:layout_width="30dp"
+                     android:layout_height="30dp"
+                     android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                     android:src="@drawable/ic_baseline_play_circle_filled_50" />
+            --> </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

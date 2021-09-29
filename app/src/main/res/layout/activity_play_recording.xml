@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    >
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/playrec_toolbar"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_baseline_arrow_back"
+                android:padding="5sp"
+                android:id="@+id/img_back"
+                android:layout_centerVertical="true"
+                />
+
+            <TextView
+                android:id="@+id/titletool"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="50dp"
+                android:gravity="center"
+                android:text="Play Recording"
+                android:textSize="15dp" />
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_baseline_share"
+                android:padding="5dp"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/img_share_playrec"
+                />
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+
+    <LinearLayout
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:scaleType="fitXY"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_baseline_keyboard_voice"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:tint="@color/colorPrimary">
+
+        </ImageView>
+        <TextView
+
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:id="@+id/nameid"
+            android:layout_gravity="center_vertical"
+            android:textAlignment="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+
+
+        </TextView>
+
+    </LinearLayout>
+    <SeekBar
+
+        android:thumbTint="#400707"
+        android:id="@+id/seekBar"
+        android:progressTint="#400707"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+    </SeekBar>
+    <LinearLayout
+        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:backgroundTint="@color/colorPrimary"
+                android:background="@drawable/ic_baseline_pause_circle_filled"
+                android:id="@+id/buttonPause"
+                android:layout_height="66dp"
+                android:layout_width="66dp">
+
+            </Button>
+        </LinearLayout>
+
+
+        <LinearLayout
+
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_height="wrap_content">
+            <Button
+
+                android:background="@drawable/ic_baseline_play_circle_filled"
+                android:id="@+id/buttonPlay"
+                android:layout_height="66dp"
+                android:layout_width="66dp">
+
+            </Button>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <Button
+
+                android:background="@drawable/ic_baseline_stop"
+                android:id="@+id/buttonStop"
+                android:layout_height="80dp"
+                android:layout_width="80dp">
+
+            </Button>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <!--    <ScrollView
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <LinearLayout
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <FrameLayout
+                    android:id="@+id/fl_adplaceholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp" />
+                <CheckBox
+                    android:id="@+id/cb_start_muted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Start video ads muted" />
+                <Button
+                    android:id="@+id/btn_refresh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Refresh Ad" />
+                <TextView
+                    android:gravity="center"
+                    android:text="Video status: "
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_video_status"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+            </LinearLayout>
+        </ScrollView>-->
+    <LinearLayout
+        android:id="@+id/fbbanneradcontaier_playrec"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="vertical"
+        android:layout_marginTop="100dp"
+        />
+</LinearLayout>
