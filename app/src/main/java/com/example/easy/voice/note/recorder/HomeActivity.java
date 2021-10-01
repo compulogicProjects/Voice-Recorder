@@ -26,16 +26,24 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent= new Intent(HomeActivity.this,RecordingScreen.class);
-                startActivity(intent);
+                startActivity(intent);        finish();
+
             }
         });
         // Saved Recording Button
         savedlinear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               Intent intent= new Intent(HomeActivity.this,SavedRecording.class );
-               startActivity(intent);
+               Intent intent= new Intent(HomeActivity.this, SavedRecordingList.class );
+               intent.putExtra("back",1);
+               startActivity(intent);        finish();
+
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

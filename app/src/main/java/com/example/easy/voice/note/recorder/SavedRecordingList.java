@@ -17,7 +17,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-public class SavedRecording extends AppCompatActivity {
+public class SavedRecordingList extends AppCompatActivity implements DeleteClisckLisner {
     ImageView backimage;
     private File mediaStorageDir;
     ListView listView;
@@ -28,27 +28,37 @@ public class SavedRecording extends AppCompatActivity {
     String[] datetime;
     int[] img;
     int[] dlt;
-
+    final ArrayList<File> songs = readsongs(new File(Environment.getExternalStorageDirectory().
+            getAbsolutePath() + "/Voice Recorder"));
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_saved_recording);
-        backimage=findViewById(R.id.backimage);
+        backimage = findViewById(R.id.backimage);
         listView = findViewById(R.id.list_item);
 
         backimage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(SavedRecording.this,RecordingScreen.class);
-                startActivity(intent);
+                Intent intent1 = getIntent();
+                int back = intent1.getIntExtra("back", 0);
+                if (back == 1) {
+                    Intent intent = new Intent(SavedRecordingList.this, HomeActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else if (back == 2) {
+                    Intent intent = new Intent(SavedRecordingList.this, RecordingScreen.class);
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
 
-        final ArrayList<File> songs = readsongs(new File(Environment.getExternalStorageDirectory() + "/VCRecorder"));
+
 
         sdf2 = new SimpleDateFormat("MM-dd-yy HH:mm a");
 
-        mediaStorageDir = new File(Environment.getExternalStorageDirectory(), "/VCRecorder");
+        mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "/Voice Recorder");
         if (mediaStorageDir.exists()) {
             Toast.makeText(this, "Directory Exists", Toast.LENGTH_LONG).show();
         }
@@ -59,27 +69,30 @@ public class SavedRecording extends AppCompatActivity {
         dlt = new int[songs.size()];
         for (int i = 0; i < songs.size(); i++) {
 
-            songNames[i] = songs.get(i).getName().replace(".3gp", "");
+            songNames[i] = songs.get(i).getName().replace(".mp3", "");
             datetime[i] = sdf2.format(songs.get(i).lastModified());
             img[i] = R.drawable.ic_baseline_play_circle_filled;
             dlt[i] = R.drawable.ic_baseline_delete;
         }
         if (songNames.length != 0) {
 
-            MyAdapter customAdapter = new MyAdapter(this, songNames, datetime, img, dlt);
+            MyAdapter customAdapter = new MyAdapter(this, songNames, datetime, img, dlt,this);
          /*   ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(VoiceRecordingList.this,
                     R.layout.vr_list_item, R.id.vr_list_name, songNames);*/
             listView.setAdapter(customAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                    myposition=position;
-                    Intent intent = new Intent(SavedRecording.this, PlayRecording.class);
+
+                    myposition = position;
+                    Intent intent = new Intent(SavedRecordingList.this, PlayRecording.class);
                     intent.putExtra("pos", myposition);
                     intent.putExtra("list", songs);
                     startActivity(intent);
+
                 }
             });
+
 
         }
     }
@@ -94,11 +107,32 @@ public class SavedRecording extends AppCompatActivity {
                         arrayList.addAll(readsongs(file));
                     }
 
-                } else if (file.getName().endsWith(".3gp")) {
+                } else if (file.getName().endsWith(".mp3")) {
                     arrayList.add(file);
                 }
             }
         }
         return arrayList;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent1 = getIntent();
+        int back = intent1.getIntExtra("back", 0);
+        if (back == 1) {
+            Intent intent = new Intent(SavedRecordingList.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
+        } else if (back == 2) {
+            Intent intent = new Intent(SavedRecordingList.this, RecordingScreen.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    @Override
+    public void ondeleteclick(int pos) {
+        Toast.makeText(this, ""+songs.get(pos) ,Toast.LENGTH_LONG).show();
+
     }
 }

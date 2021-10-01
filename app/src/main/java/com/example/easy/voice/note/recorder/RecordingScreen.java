@@ -5,7 +5,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.room.processor.Context;
 
 import android.Manifest;
 import android.content.Intent;
@@ -15,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -36,9 +34,8 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.UUID;
 
 public class RecordingScreen extends AppCompatActivity {
     TextView titlerecording,starttext;
@@ -48,8 +45,10 @@ public class RecordingScreen extends AppCompatActivity {
     ImageView image,saveimage,cancel,backbutton,saverecording;
     public static File mediaStorageDir;
     MediaRecorder mediaRecorder;
-    String uuid = "Recording " + UUID.randomUUID().toString();
-    public String Path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/VCRecorder/ " + uuid + ".3gp";
+    String uuid = "Recording ";
+    SimpleDateFormat sdf2=new SimpleDateFormat("MM-dd-yy HH:mm a");
+    public String Path = Environment.getExternalStorageDirectory().getAbsolutePath()
+            +"/Voice Recorder/"+uuid+".mp3"+sdf2;
     boolean startrecording=false;
     boolean stoprecording=true;
     private boolean pause=false;
@@ -135,10 +134,10 @@ public class RecordingScreen extends AppCompatActivity {
                     public void onClick(View v) {
                         String newFileName = userInput.getText().toString();
                         if (newFileName != null && newFileName.trim().length() > 0) {
-                            File newFile = new File(Path, newFileName);
+                            File newFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Voice Recorder/"+newFileName+".mp3");
                             File oldFile = new File(Path);
                             oldFile.renameTo(newFile);
-                            Toast.makeText(RecordingScreen.this, newFileName+"Saved!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RecordingScreen.this, newFile+"Saved!", Toast.LENGTH_SHORT).show();
                             alertDialog.dismiss();
                             titlerecording.setText("Tap On Start Button to Record!");
                             image.setImageResource(R.drawable.ic_baseline_keyboard_voice);
@@ -167,14 +166,18 @@ public class RecordingScreen extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent= new Intent(RecordingScreen.this,HomeActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
         // Recording List
         saverecording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(RecordingScreen.this,SavedRecording.class);
+                Intent intent=new Intent(RecordingScreen.this, SavedRecordingList.class);
+                intent.putExtra("back",2);
                 startActivity(intent);
+                finish();
+
             }
         });
         // Delete Current Recording
@@ -188,7 +191,7 @@ public class RecordingScreen extends AppCompatActivity {
                 chronometer.setBase(SystemClock.elapsedRealtime());
                 timeWhenStopped=0;
                 chronometer.stop();
-                File file= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "/VCRecorder");
+                File file= new File(Path);
                     file.delete();
                     Toast.makeText(RecordingScreen.this, file + "Deleted", Toast.LENGTH_SHORT).show();
                 cancel.setVisibility(View.INVISIBLE);
@@ -266,7 +269,12 @@ public class RecordingScreen extends AppCompatActivity {
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setOutputFile(Path);
+        if(Build.VERSION.SDK_INT < 26) {
+            mediaRecorder.setOutputFile(Path);
+        }
+        else{
+            mediaRecorder.setOutputFile(Path);
+        }
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         try {
             mediaRecorder.prepare();
@@ -276,7 +284,7 @@ public class RecordingScreen extends AppCompatActivity {
     }
     // Create Directory
     public void create_VC_Recorder_Dir() {
-        mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "/VCRecorder");
+        mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),"/Voice Recorder");
 
         if (mediaStorageDir.exists()) {
             //Log.d(TAG, "Dir is already created");
@@ -334,5 +342,12 @@ public class RecordingScreen extends AppCompatActivity {
                     }
                 }).check();
         return all_permissions;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent= new Intent(RecordingScreen.this,HomeActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

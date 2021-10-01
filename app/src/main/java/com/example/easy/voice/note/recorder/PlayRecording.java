@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
@@ -36,6 +37,8 @@ public class PlayRecording extends AppCompatActivity {
     private TextView videoStatus;
     ImageView shareimg, backimg;
     Toolbar toolbar;
+    Runnable runnable;
+    Handler handler;
     //RecordingSampler recordingSampler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +60,8 @@ public class PlayRecording extends AppCompatActivity {
         textView.setText(arrayList.get(pos).toString());
         buttonClick = new AlphaAnimation(2F, 0.8F);
 
-        seekBar.setProgress(0);
-        seekBar.setMax(100);
+        handler=new Handler();
+
 
         buttonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,13 +69,15 @@ public class PlayRecording extends AppCompatActivity {
                 mediaPlayer = new MediaPlayer();
                 try {
                     mediaPlayer.setDataSource(uri.toString());
+                    Toast.makeText(PlayRecording.this, "Recording Play", Toast.LENGTH_SHORT).show();
                     mediaPlayer.prepare();
                     mediaPlayer.seekTo(lenght);
                     mediaPlayer.start();
                     lenght = 0;
+
                     //seekBar.setMax(mediaPlayer.getDuration());
                     //seek();
-                    //seek1();
+                    seek1();
                     buttonPlay.startAnimation(buttonClick);
                 } catch (IOException e) {
 
@@ -91,6 +96,7 @@ public class PlayRecording extends AppCompatActivity {
                 sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out the App at: https://play.google.com/store/apps/details?id=" + appPackageName);
                 sendIntent.setType("text/plain");
                 startActivity(sendIntent);
+                finish();
 
             }
         });
@@ -98,13 +104,27 @@ public class PlayRecording extends AppCompatActivity {
     }
 
     private void seek1() {
-        seekBar.setProgress(0);
-        seekBar.setMax(mediaPlayer.getDuration());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                seekBar.setMax(mediaPlayer.getDuration());
+                for (int i=0;i<=mediaPlayer.getCurrentPosition();i++){
+                seekBar.setProgress(i);
+                }
+                Toast.makeText(PlayRecording.this,String.valueOf(mediaPlayer.getCurrentPosition()),Toast.LENGTH_SHORT).show();
+            }
+        },1000);
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(mediaPlayer != null && fromUser){
+                    Toast.makeText(getApplicationContext(), String.valueOf(progress), Toast.LENGTH_LONG).show();
+                    mediaPlayer.seekTo(progress);
+                    seekBar.setProgress(progress);
             }
+
+        }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -115,13 +135,6 @@ public class PlayRecording extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
-        });
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                //recordingSampler.stopRecording();
-            }
-        });
-        new Thread((Runnable) this).start();
+    });
     }
 }
