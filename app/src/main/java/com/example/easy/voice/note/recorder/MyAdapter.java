@@ -1,6 +1,7 @@
 package com.example.easy.voice.note.recorder;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import com.example.easy.R;
 
@@ -52,7 +54,25 @@ public class MyAdapter extends ArrayAdapter<String> {
             @Override
             public void onClick(View view) {
 
-                deleteClisckLisner.ondeleteclick(position);
+                AlertDialog.Builder builder= new AlertDialog.Builder(context);
+                builder.setTitle("Confirm Delete")
+                        .setMessage("Are You Sure You want to Delete")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                deleteClisckLisner.ondeleteclick(position);
+
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                            }
+                        });
+                AlertDialog dialog= builder.create();
+                dialog.show();
+
              /*   File mediaStorageDir = new File(Environment.getExternalStorageDirectory().
                         getAbsolutePath(), "/Voice Recorder");
                 if (mediaStorageDir.exists()) {
@@ -72,7 +92,8 @@ public class MyAdapter extends ArrayAdapter<String> {
              }
              else {
                  Toast.makeText(context, "File Does not Exist", Toast.LENGTH_SHORT).show();
-             }*/
+             }
+             */
             }
         });
 
@@ -85,22 +106,6 @@ public class MyAdapter extends ArrayAdapter<String> {
         return view;
     }
 
-    private ArrayList<File> readsongs(File root) {
-        ArrayList<File> arrayList = new ArrayList<>();
-        File[] files = root.listFiles(); //here you will get NPE if directory doesn't contains  any file,handle it like this.
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    if (file != null) {
-                        arrayList.addAll(readsongs(file));
-                    }
 
-                } else if (file.getName().endsWith(".mp3")) {
-                    arrayList.add(file);
-                }
-            }
-        }
-        return arrayList;
-    }
 
 }
