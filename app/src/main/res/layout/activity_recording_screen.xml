@@ -39,14 +39,14 @@
     </androidx.appcompat.widget.Toolbar>
 
     <TextView
-        android:layout_marginTop="10dp"
-        android:layout_below="@+id/toolbar"
         android:id="@+id/recordingtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
         android:text="Tap On Start Button to Start Recording"
-        android:textSize="22dp" />
+        android:textSize="20dp" />
 
     <Chronometer
         android:id="@+id/chronometer"
@@ -71,21 +71,32 @@
         android:max="100"
         android:progress="0"
         android:progressDrawable="@drawable/progressbar_resource" />
-
-    <LinearLayout
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
+        <ImageView
+            android:layout_marginRight="40dp"
+            android:layout_toLeftOf="@+id/startlinear"
+            android:layout_centerVertical="true"
+            android:id="@+id/cancelRecording"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_baseline_clear"
+            android:visibility="invisible"
+            app:tint="@color/colorPrimary" />
+    <RelativeLayout
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
         android:id="@+id/startlinear"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
         android:background="@drawable/round_background"
         android:orientation="vertical"
         android:padding="10dp">
 
         <ImageView
+            android:layout_centerHorizontal="true"
             android:id="@+id/startimage"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -93,6 +104,8 @@
             android:src="@drawable/ic_baseline_keyboard_voice" />
 
         <TextView
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/startimage"
             android:id="@+id/start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -100,28 +113,20 @@
             android:text="@string/start"
             android:textColor="@color/white"
             android:textSize="30sp" />
-    </LinearLayout>
+    </RelativeLayout>
+        <ImageView
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/startlinear"
+            android:id="@+id/saveimage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginBottom="40dp"
+            android:src="@drawable/ic_baseline_check"
+            android:visibility="invisible"
+            app:tint="@color/colorPrimary" />
 
-    <ImageView
-        android:id="@+id/saveimage"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="40dp"
-        android:layout_marginBottom="40dp"
-        android:layout_toRightOf="@+id/startlinear"
-        android:src="@drawable/ic_baseline_check"
-        android:visibility="invisible"
-        app:tint="@color/colorPrimary" />
 
-    <ImageView
-        android:id="@+id/cancelRecording"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="60dp"
-        android:layout_marginBottom="40dp"
-        android:src="@drawable/ic_baseline_clear"
-        android:visibility="invisible"
-        app:tint="@color/colorPrimary" />
+    </RelativeLayout>
+
 </RelativeLayout>

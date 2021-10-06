@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.example.easy.R;
 
 public class HomeActivity extends AppCompatActivity {
-    LinearLayout startlinear,savedlinear;
+    LinearLayout startlinear;
+    RelativeLayout savedlinear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

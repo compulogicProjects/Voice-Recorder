@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +42,7 @@ public class RecordingScreen extends AppCompatActivity {
     TextView titlerecording,starttext;
     Chronometer chronometer;
     ProgressBar progressBar;
-    LinearLayout linearLayout;
+    RelativeLayout linearLayout;
     ImageView image,saveimage,cancel,backbutton,saverecording;
     public static File mediaStorageDir;
     MediaRecorder mediaRecorder;
