@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/songname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/micpic"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="Recording_00"
+        android:textSize="20dp" />
+    <ImageView
+        android:id="@+id/micpic"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_baseline_keyboard_voice"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        app:tint="@color/colorPrimary">
+
+    </ImageView>
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/songname"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp">
+
+    </SeekBar>
+    <RelativeLayout
+        android:id="@+id/time"
+        android:layout_below="@id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textstart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="00:00"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/textstop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:text="00:00"
+            android:textSize="15dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_marginBottom="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/time"
+        android:layout_marginTop="50dp">
+
+        <ImageView
+            android:id="@+id/previous"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:layout_toLeftOf="@+id/btnstartstop"
+            android:src="@drawable/ic_baseline_skip_previous"
+            app:tint="@color/colorPrimary" />
+
+        <RelativeLayout
+            android:id="@+id/btnstartstop"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/start_rec_background">
+
+            <ImageView
+                android:id="@+id/startstopbtn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_baseline_pause" />
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/next"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@+id/btnstartstop"
+            android:src="@drawable/ic_baseline_skip_next"
+            app:tint="@color/colorPrimary" />
+    </RelativeLayout>
+
+
+</RelativeLayout>

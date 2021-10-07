@@ -40,7 +40,7 @@ public class PlayRecording extends AppCompatActivity {
     Toolbar toolbar;
     Runnable runnable;
     Handler handler;
-
+    Thread updateseekbar;
 
     //RecordingSampler recordingSampler;
     @Override
@@ -72,16 +72,18 @@ public class PlayRecording extends AppCompatActivity {
         });
 
     }
-    public  void getintent(){
+     public  void getintent(){
         Bundle bundle = getIntent().getExtras();
         arrayList = bundle.getParcelableArrayList("list");
         int pos = bundle.getInt("pos");
         int seek = bundle.getInt("seek");
+        String str= bundle.getString("str");
         uri = Uri.parse(arrayList.get(pos).toString());
-        mediaPlayer = new MediaPlayer();
-        Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
-        mediaPlayer = MediaPlayer.create(PlayRecording.this, uri);
-        textView.setText(arrayList.get(pos).toString());
+         Toast.makeText(this, arrayList.get(pos)+"", Toast.LENGTH_SHORT).show();
+         //mediaPlayer = new MediaPlayer();
+        //mediaPlayer = MediaPlayer.create(PlayRecording.this, uri);
+        textView.setText(str);
+        seekBar.setProgress(seek);
 
     }
 
@@ -117,7 +119,8 @@ public class PlayRecording extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mediaPlayer.seekTo(seek.getProgress());
+                getintent();
+                mediaPlayer.seekTo(seekBar.getProgress());
             }
         });
     }

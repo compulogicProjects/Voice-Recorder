@@ -13,16 +13,23 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.easy.R;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +64,11 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
     TextView txtstart,textstop;
     LinearLayout bottomlinear;
     SharedPreferences sharedPreferences;
+    TextView songname,starttime,endtime;
+    ImageView prebtn,nextbtn;
+    RelativeLayout startstopbtn;
+    SeekBar seekBar1;
+    ImageView startstopbn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,11 +103,61 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
         bottomlinear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SavedRecordingList.this, PlayRecording.class);
+                BottomSheetDialog dialog= new BottomSheetDialog(SavedRecordingList.this);
+                View bottomsheetview= getLayoutInflater().inflate(R.layout.bottomsheet,null);
+                dialog.setContentView(bottomsheetview);
+                songname= bottomsheetview.findViewById(R.id.songname);
+                 starttime= bottomsheetview.findViewById(R.id.textstart);
+                 endtime= bottomsheetview.findViewById(R.id.textstop);
+                 prebtn=bottomsheetview.findViewById(R.id.previous);
+                startstopbtn=bottomsheetview.findViewById(R.id.btnstartstop);
+                 nextbtn=bottomsheetview.findViewById(R.id.next);
+                 seekBar1=bottomsheetview.findViewById(R.id.seekBar);
+                 startstopbn= bottomsheetview.findViewById(R.id.startstopbtn);
+                String name2=listView.getItemAtPosition(myposition).toString();
+                songname.setText(name2);
+                /*String str= playtitle.getText().toString();
+                songname.setText(str);*/
+                String starty= createtime(mediaPlayer.getDuration());
+                endtime.setText(starty);
+                seek1();
+                seek();
+                final Handler handler= new Handler();
+                int delay=1000;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        String currentttime=createtime(mediaPlayer.getCurrentPosition());
+                        starttime.setText(currentttime);
+                        handler.postDelayed(this,delay);
+                    }
+                },delay);
+                nextbtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        nextsong1();
+                    }
+                });
+                prebtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        prevsong1();
+                    }
+                });
+                startstopbtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startstop1();
+                    }
+                });
+                dialog.show();
+                /*Intent intent = new Intent(SavedRecordingList.this, PlayRecording.class);
                 intent.putExtra("pos", myposition);
                 intent.putExtra("list", songs);
                 intent.putExtra("seek",mediaPlayer.getCurrentPosition());
-                startActivity(intent);
+                String str = listView.getItemAtPosition(myposition).toString();
+                intent.putExtra("str",str);
+                startActivity(intent);*/
             }
         });
 
@@ -116,17 +178,7 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
         btnstartstop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mediaPlayer.isPlaying()){
-                    mediaPlayer.pause();
-                    lenght=mediaPlayer.getCurrentPosition() ;
-                    btnstartstop.setImageResource(R.drawable.ic_baseline_play_arrow);
-                }
-                else{
-                    mediaPlayer.seekTo(lenght);
-                    mediaPlayer.start();
-                    btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
-
-                }
+                startstop();
 
                 //seekBar.setMax(mediaPlayer.getDuration());
                 //seek();
@@ -163,6 +215,34 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
         adapter();
 
     }
+    public void startstop() {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                lenght = mediaPlayer.getCurrentPosition();
+
+                btnstartstop.setImageResource(R.drawable.ic_baseline_play_arrow);
+            } else {
+                mediaPlayer.seekTo(lenght);
+                mediaPlayer.start();
+                btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
+
+            }
+        }
+    public void startstop1() {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            lenght = mediaPlayer.getCurrentPosition();
+            startstopbn.setImageResource(R.drawable.ic_baseline_play_arrow);
+            btnstartstop.setImageResource(R.drawable.ic_baseline_play_arrow);
+        } else {
+            mediaPlayer.seekTo(lenght);
+            mediaPlayer.start();
+            startstopbn.setImageResource(R.drawable.ic_baseline_pause);
+            btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
+
+        }
+    }
+
     public void nextsong(){
         if (myposition<songs.size()-1) {
             myposition=myposition+1;
@@ -177,6 +257,7 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             playtitle.setText(str);
             String endtime= createtime(mediaPlayer.getDuration());
             textstop.setText(endtime);
+            btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
             seek();
         }
         else {
@@ -193,9 +274,11 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             playtitle.setText(str);
             String endtime= createtime(mediaPlayer.getDuration());
             textstop.setText(endtime);
+            btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
             seek();
         }
     }
+
     public void prevsong(){
         if (myposition>0) {
             myposition=myposition-1;
@@ -210,6 +293,7 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             playtitle.setText(str);
             String endtime= createtime(mediaPlayer.getDuration());
             textstop.setText(endtime);
+            btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
             seek();
         }
         else{
@@ -226,6 +310,50 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             playtitle.setText(str);
             String endtime= createtime(mediaPlayer.getDuration());
             textstop.setText(endtime);
+            btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
+            seek();
+        }
+    }
+    public void prevsong1(){
+        if (myposition>0) {
+            myposition=myposition-1;
+            mediaPlayer.stop();
+            String nextsong = songs.get(myposition).toString();
+            Uri uri = Uri.parse(nextsong);
+            mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+            //Toast.makeText(SavedRecordingList.this, "Sound Start", Toast.LENGTH_SHORT).show();
+            mediaPlayer.start();
+            String str = listView.getItemAtPosition(myposition).toString();
+            //Toast.makeText(SavedRecordingList.this, str, Toast.LENGTH_SHORT).show();
+            songname.setText(str);
+            playtitle.setText(str);
+            String endtime1= createtime(mediaPlayer.getDuration());
+            endtime.setText(endtime1);
+            textstop.setText(endtime1);
+            btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
+            startstopbn.setImageResource(R.drawable.ic_baseline_pause);
+            seek1();
+            seek();
+        }
+        else{
+            myposition=songs.size();
+            myposition=myposition-1;
+            mediaPlayer.stop();
+            String nextsong = songs.get(myposition).toString();
+            Uri uri = Uri.parse(nextsong);
+            mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+            //Toast.makeText(SavedRecordingList.this, "Sound Start", Toast.LENGTH_SHORT).show();
+            mediaPlayer.start();
+            String str = listView.getItemAtPosition(myposition).toString();
+            //Toast.makeText(SavedRecordingList.this, str, Toast.LENGTH_SHORT).show();
+            songname.setText(str);
+            playtitle.setText(str);
+            String endtime1= createtime(mediaPlayer.getDuration());
+            endtime.setText(endtime1);
+            textstop.setText(endtime1);
+            btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
+            startstopbn.setImageResource(R.drawable.ic_baseline_pause);
+            seek1();
             seek();
         }
     }
@@ -274,8 +402,96 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             }
         });
     }
+    public  void seek1(){
+        updateseekbar= new Thread(){
+            @Override
+            public  void run(){
+                int totalduration=mediaPlayer.getDuration();
+                int currentposition=0;
+                while(currentposition<totalduration){
+                    try {
+                        sleep(500);
+                        currentposition=mediaPlayer.getCurrentPosition();
+                        seekBar1.setProgress(currentposition);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        seekBar1.setMax(mediaPlayer.getDuration());
+        updateseekbar.start();
+        seekBar1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
 
-    public void adapter() {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mediaPlayer.seekTo(seekBar.getProgress());
+            }
+        });
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                seekBar1.setProgress(0);
+                seek1();
+                seek();
+                mediaPlayer.setLooping(true);
+                nextsong1();
+                nextsong();
+            }
+        });
+    }
+    public void nextsong1() {
+        if (myposition < songs.size() - 1) {
+            myposition = myposition + 1;
+            mediaPlayer.stop();
+            String nextsong = songs.get(myposition).toString();
+            Uri uri = Uri.parse(nextsong);
+            mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+            //Toast.makeText(SavedRecordingList.this, "Sound Start", Toast.LENGTH_SHORT).show();
+            mediaPlayer.start();
+            String str = listView.getItemAtPosition(myposition).toString();
+            //Toast.makeText(SavedRecordingList.this, str, Toast.LENGTH_SHORT).show();
+            songname.setText(str);
+            playtitle.setText(str);
+            String endtime1 = createtime(mediaPlayer.getDuration());
+            endtime.setText(endtime1);
+            textstop.setText(endtime1);
+            btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
+            startstopbn.setImageResource(R.drawable.ic_baseline_pause);
+            seek1();
+            seek();
+        } else {
+            myposition = -1;
+            myposition = myposition + 1;
+            mediaPlayer.stop();
+            String nextsong = songs.get(myposition).toString();
+            Uri uri = Uri.parse(nextsong);
+            mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+            //Toast.makeText(SavedRecordingList.this, "Sound Start", Toast.LENGTH_SHORT).show();
+            mediaPlayer.start();
+            String str = listView.getItemAtPosition(myposition).toString();
+            //Toast.makeText(SavedRecordingList.this, str, Toast.LENGTH_SHORT).show();
+            playtitle.setText(str);
+            songname.setText(str);
+            String endtime1 = createtime(mediaPlayer.getDuration());
+            endtime.setText(endtime1);
+            textstop.setText(endtime1);
+            btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
+            startstopbn.setImageResource(R.drawable.ic_baseline_pause);
+            seek1();
+            seek();
+        }
+    }
+        public void adapter() {
         mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "/Voice Recorder");
         if (mediaStorageDir.exists()) {
             Toast.makeText(this, "Directory Exists", Toast.LENGTH_LONG).show();
@@ -301,12 +517,14 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
                 @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                    if(mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                    }
 
                     myposition=position;
 
                     name=adapterView.getItemAtPosition(myposition).toString();
                     playtitle.setText(name);
-
                     Uri uri= Uri.parse(songs.get(myposition).toString());
                     mediaPlayer=MediaPlayer.create(getApplicationContext(),uri);
                     Toast.makeText(SavedRecordingList.this, "Sound Start", Toast.LENGTH_SHORT).show();
