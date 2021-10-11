@@ -20,15 +20,15 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         //initilize
-        startlinear=findViewById(R.id.startlinear);
-        savedlinear=findViewById(R.id.savedrecordinglinear);
+        startlinear = findViewById(R.id.startlinear);
+        savedlinear = findViewById(R.id.savedrecordinglinear);
 
         // Start Button
         startlinear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent= new Intent(HomeActivity.this,RecordingScreen.class);
-                startActivity(intent);        finish();
+                Intent intent = new Intent(HomeActivity.this, RecordingScreen.class);
+                startActivity(intent);
 
             }
         });
@@ -36,16 +36,10 @@ public class HomeActivity extends AppCompatActivity {
         savedlinear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               Intent intent= new Intent(HomeActivity.this, SavedRecordingList.class );
-               intent.putExtra("back",1);
-               startActivity(intent);        finish();
+                Intent intent = new Intent(HomeActivity.this, SavedRecordingList.class);
+                startActivity(intent);
 
             }
         });
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
     }
 }

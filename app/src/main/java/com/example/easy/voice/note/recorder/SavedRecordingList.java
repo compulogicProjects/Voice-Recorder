@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,7 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             getAbsolutePath() + "/Voice Recorder"));
     Handler handler;
     Thread updateseekbar;
+    Thread updateseekbar1;
     TextView txtstart,textstop;
     LinearLayout bottomlinear;
     SharedPreferences sharedPreferences;
@@ -69,6 +71,7 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
     RelativeLayout startstopbtn;
     SeekBar seekBar1;
     ImageView startstopbn;
+    int position=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,26 +100,30 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
         sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor= sharedPreferences.edit();
 
-
-
-        seek();
+        BottomSheetDialog dialog= new BottomSheetDialog(SavedRecordingList.this);
+        View bottomsheetview= getLayoutInflater().inflate(R.layout.bottomsheet,null);
+        dialog.setContentView(bottomsheetview);
+        songname= bottomsheetview.findViewById(R.id.songname);
+        starttime= bottomsheetview.findViewById(R.id.textstart);
+        endtime= bottomsheetview.findViewById(R.id.textstop);
+        seekBar1=bottomsheetview.findViewById(R.id.seekBar);
+        startstopbn= bottomsheetview.findViewById(R.id.startstopbtn);
+        prebtn=bottomsheetview.findViewById(R.id.previous);
+        startstopbtn=bottomsheetview.findViewById(R.id.btnstartstop);
+        nextbtn=bottomsheetview.findViewById(R.id.next);
         bottomlinear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BottomSheetDialog dialog= new BottomSheetDialog(SavedRecordingList.this);
-                View bottomsheetview= getLayoutInflater().inflate(R.layout.bottomsheet,null);
-                dialog.setContentView(bottomsheetview);
-                songname= bottomsheetview.findViewById(R.id.songname);
-                 starttime= bottomsheetview.findViewById(R.id.textstart);
-                 endtime= bottomsheetview.findViewById(R.id.textstop);
-                 prebtn=bottomsheetview.findViewById(R.id.previous);
-                startstopbtn=bottomsheetview.findViewById(R.id.btnstartstop);
-                 nextbtn=bottomsheetview.findViewById(R.id.next);
-                 seekBar1=bottomsheetview.findViewById(R.id.seekBar);
-                 startstopbn= bottomsheetview.findViewById(R.id.startstopbtn);
-                String name2=listView.getItemAtPosition(myposition).toString();
+
+                /*String name2=listView.getItemAtPosition(myposition).toString();
+                if (mediaPlayer.isPlaying()){
+                    startstopbn.setImageResource(R.drawable.ic_baseline_pause);
+                }
+                else{
+                    startstopbn.setImageResource(R.drawable.ic_baseline_play_arrow);
+                }
                 songname.setText(name2);
-                /*String str= playtitle.getText().toString();
+                *//*String str= playtitle.getText().toString();
                 songname.setText(str);*/
                 String starty= createtime(mediaPlayer.getDuration());
                 endtime.setText(starty);
@@ -192,20 +199,13 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             @Override
             public void onClick(View view) {
                 if (mediaPlayer.isPlaying()){
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
+                    mediaPlayer.pause();
+                    int seekbarval= seekBar.getProgress();
+                    Uri uri= Uri.parse(songs.get(myposition).toString());
+                    Toast.makeText(SavedRecordingList.this, uri+"", Toast.LENGTH_SHORT).show();
+                    //preferencesutill.setPreviousSongInSharedPrefs(getApplicationContext(),seekbarval);
                 }
-                Intent intent1 = getIntent();
-                int back = intent1.getIntExtra("back", 0);
-                if (back == 1) {
-                    Intent intent = new Intent(SavedRecordingList.this, HomeActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else if (back == 2) {
-                    Intent intent = new Intent(SavedRecordingList.this, RecordingScreen.class);
-                    startActivity(intent);
-                    finish();
-                }
+                finish();
             }
         });
 
@@ -218,10 +218,9 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
     public void startstop() {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pause();
-                lenght = mediaPlayer.getCurrentPosition();
-
                 btnstartstop.setImageResource(R.drawable.ic_baseline_play_arrow);
             } else {
+                lenght = seekBar.getProgress();
                 mediaPlayer.seekTo(lenght);
                 mediaPlayer.start();
                 btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
@@ -231,10 +230,9 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
     public void startstop1() {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
-            lenght = mediaPlayer.getCurrentPosition();
             startstopbn.setImageResource(R.drawable.ic_baseline_play_arrow);
             btnstartstop.setImageResource(R.drawable.ic_baseline_play_arrow);
-        } else {
+        } else {             lenght = seekBar1.getProgress();
             mediaPlayer.seekTo(lenght);
             mediaPlayer.start();
             startstopbn.setImageResource(R.drawable.ic_baseline_pause);
@@ -245,8 +243,11 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
 
     public void nextsong(){
         if (myposition<songs.size()-1) {
-            myposition=myposition+1;
-            mediaPlayer.stop();
+            if (mediaPlayer.isPlaying()){
+                mediaPlayer.stop();
+            }
+            myposition++;
+            Toast.makeText(SavedRecordingList.this,myposition+"", Toast.LENGTH_SHORT).show();
             String nextsong = songs.get(myposition).toString();
             Uri uri = Uri.parse(nextsong);
             mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
@@ -255,13 +256,19 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             String str = listView.getItemAtPosition(myposition).toString();
             //Toast.makeText(SavedRecordingList.this, str, Toast.LENGTH_SHORT).show();
             playtitle.setText(str);
-            String endtime= createtime(mediaPlayer.getDuration());
-            textstop.setText(endtime);
+            songname.setText(str);
+            String endtime1= createtime(mediaPlayer.getDuration());
+            textstop.setText(endtime1);
+            endtime.setText(endtime1);
+            Log.e("media player","bottom media player song name:"+playtitle.getText().toString());
+            Log.e("media player","bottom media player song end time"+textstop.getText().toString());
+            Log.e("media player","bottom sheet dialog song name:"+playtitle.getText().toString());
+            Log.e("media player","bottom sheet dialog song end time"+textstop.getText().toString());
             btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
             seek();
         }
         else {
-            myposition=-1;
+            myposition=1;
             myposition=myposition+1;
             mediaPlayer.stop();
             String nextsong = songs.get(myposition).toString();
@@ -272,8 +279,14 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             String str = listView.getItemAtPosition(myposition).toString();
             //Toast.makeText(SavedRecordingList.this, str, Toast.LENGTH_SHORT).show();
             playtitle.setText(str);
-            String endtime= createtime(mediaPlayer.getDuration());
-            textstop.setText(endtime);
+            songname.setText(str);
+            String endtime1= createtime(mediaPlayer.getDuration());
+            textstop.setText(endtime1);
+            endtime.setText(endtime1);
+            Log.e("media player","bottom media player song name:"+playtitle.getText().toString());
+            Log.e("media player","bottom media player song end time"+textstop.getText().toString());
+            Log.e("media player","bottom sheet dialog player song name:"+playtitle.getText().toString());
+            Log.e("media player","bottom sheet dialog song end time"+textstop.getText().toString());
             btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
             seek();
         }
@@ -330,6 +343,10 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             String endtime1= createtime(mediaPlayer.getDuration());
             endtime.setText(endtime1);
             textstop.setText(endtime1);
+            Log.e("songname",songname.getText().toString());
+            Log.e("playtile",playtitle.getText().toString());
+            Log.e("endtime",endtime.getText().toString());
+            Log.e("textstop",textstop.getText().toString());
             btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
             startstopbn.setImageResource(R.drawable.ic_baseline_pause);
             seek1();
@@ -351,6 +368,10 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             String endtime1= createtime(mediaPlayer.getDuration());
             endtime.setText(endtime1);
             textstop.setText(endtime1);
+            Log.e("songname",songname.getText().toString());
+            Log.e("playtile",playtitle.getText().toString());
+            Log.e("endtime",endtime.getText().toString());
+            Log.e("textstop",textstop.getText().toString());
             btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
             startstopbn.setImageResource(R.drawable.ic_baseline_pause);
             seek1();
@@ -366,15 +387,19 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
                 while(currentposition<totalduration){
                     try {
                         sleep(500);
-                        currentposition=mediaPlayer.getCurrentPosition();
+                        if (mediaPlayer!=null){
+                            currentposition=mediaPlayer.getCurrentPosition();
                         seekBar.setProgress(currentposition);
+                        seekBar1.setProgress(currentposition); }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
             }
+
         };
         seekBar.setMax(mediaPlayer.getDuration());
+        seekBar1.setMax(mediaPlayer.getDuration());
         updateseekbar.start();
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -395,15 +420,16 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
+                mediaPlayer.reset();
                 seekBar.setProgress(0);
-                seek();
+                seekBar1.setProgress(0);
                 mediaPlayer.setLooping(true);
                 nextsong();
             }
         });
     }
     public  void seek1(){
-        updateseekbar= new Thread(){
+        updateseekbar1= new Thread(){
             @Override
             public  void run(){
                 int totalduration=mediaPlayer.getDuration();
@@ -420,7 +446,7 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             }
         };
         seekBar1.setMax(mediaPlayer.getDuration());
-        updateseekbar.start();
+        updateseekbar1.start();
         seekBar1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -440,9 +466,8 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
+                seekBar.setProgress(0);
                 seekBar1.setProgress(0);
-                seek1();
-                seek();
                 mediaPlayer.setLooping(true);
                 nextsong1();
                 nextsong();
@@ -452,6 +477,7 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
     public void nextsong1() {
         if (myposition < songs.size() - 1) {
             myposition = myposition + 1;
+            Toast.makeText(SavedRecordingList.this, myposition+"", Toast.LENGTH_SHORT).show();
             mediaPlayer.stop();
             String nextsong = songs.get(myposition).toString();
             Uri uri = Uri.parse(nextsong);
@@ -465,6 +491,10 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             String endtime1 = createtime(mediaPlayer.getDuration());
             endtime.setText(endtime1);
             textstop.setText(endtime1);
+            Log.e("songname",songname.getText().toString());
+            Log.e("playtile",playtitle.getText().toString());
+            Log.e("endtime",endtime.getText().toString());
+            Log.e("textstop",textstop.getText().toString());
             btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
             startstopbn.setImageResource(R.drawable.ic_baseline_pause);
             seek1();
@@ -485,6 +515,10 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             String endtime1 = createtime(mediaPlayer.getDuration());
             endtime.setText(endtime1);
             textstop.setText(endtime1);
+            Log.e("songname",songname.getText().toString());
+            Log.e("playtile",playtitle.getText().toString());
+            Log.e("endtime",endtime.getText().toString());
+            Log.e("textstop",textstop.getText().toString());
             btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
             startstopbn.setImageResource(R.drawable.ic_baseline_pause);
             seek1();
@@ -494,60 +528,62 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
         public void adapter() {
         mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "/Voice Recorder");
         if (mediaStorageDir.exists()) {
-            Toast.makeText(this, "Directory Exists", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Directory Exists", Toast.LENGTH_LONG).show();
         }
-        songNames = new String[songs.size()];
-        datetime = new String[songs.size()];
-        img = new int[songs.size()];
-        dlt = new int[songs.size()];
-        for (int i = 0; i < songs.size(); i++) {
+            songNames = new String[songs.size()];
+            datetime = new String[songs.size()];
+            img = new int[songs.size()];
+            dlt = new int[songs.size()];
+            for (int i = 0; i < songs.size(); i++) {
 
-            songNames[i] = songs.get(i).getName().replace(".mp3", "");
-            datetime[i] = sdf2.format(songs.get(i).lastModified());
-            img[i] = R.drawable.ic_baseline_play_circle_filled;
-            dlt[i] = R.drawable.ic_baseline_delete;
-        }
-        if (songNames.length != 0) {
+                songNames[i] = songs.get(i).getName().replace(".mp3", "");
+                datetime[i] = sdf2.format(songs.get(i).lastModified());
+                img[i] = R.drawable.ic_baseline_play_circle_filled;
+                dlt[i] = R.drawable.ic_baseline_delete;
+            }
+            if (songNames.length != 0) {
 
-            customAdapter = new MyAdapter(this, songNames, datetime, img, dlt, this);
+                customAdapter = new MyAdapter(this, songNames, datetime, img, dlt, this);
          /*   ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(VoiceRecordingList.this,
                     R.layout.vr_list_item, R.id.vr_list_name, songNames);*/
-            listView.setAdapter(customAdapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @RequiresApi(api = Build.VERSION_CODES.O)
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                    if(mediaPlayer.isPlaying()){
-                        mediaPlayer.stop();
-                    }
+                listView.setAdapter(customAdapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                        if (mediaPlayer.isPlaying()) {
+                            mediaPlayer.stop();
+                        }
 
-                    myposition=position;
+                        myposition = position;
 
-                    name=adapterView.getItemAtPosition(myposition).toString();
-                    playtitle.setText(name);
-                    Uri uri= Uri.parse(songs.get(myposition).toString());
-                    mediaPlayer=MediaPlayer.create(getApplicationContext(),uri);
-                    Toast.makeText(SavedRecordingList.this, "Sound Start", Toast.LENGTH_SHORT).show();
-                    mediaPlayer.start();
-                    seekBar.setMax(mediaPlayer.getDuration());
-                    seekBar.setProgress(0);
+                        name = adapterView.getItemAtPosition(myposition).toString();
+                        playtitle.setText(name);
+                        Uri uri = Uri.parse(songs.get(myposition).toString());
+                        mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+                        Toast.makeText(SavedRecordingList.this, "Sound Start", Toast.LENGTH_SHORT).show();
+                        mediaPlayer.start();
+                        seekBar.setMax(mediaPlayer.getDuration());
+                        //seekBar.setProgress(0);
                     /*preferencesutill.setPreviousSongInSharedPrefs(getApplicationContext(),uri,name);
                     pref=true;*/
-                    btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
-                    String endtime= createtime(mediaPlayer.getDuration());
-                    textstop.setText(endtime);
+                        btnstartstop.setImageResource(R.drawable.ic_baseline_pause);
+                        String endtime = createtime(mediaPlayer.getDuration());
+                        textstop.setText(endtime);
 
-                    final Handler handler= new Handler();
-                    int delay=1000;
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            String currentttime=createtime(mediaPlayer.getCurrentPosition());
-                            txtstart.setText(currentttime);
-                            handler.postDelayed(this,delay);
-                        }
-                    },delay);
-                    seek();
+                        final Handler handler = new Handler();
+                        int delay = 1000;
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mediaPlayer != null) {
+                                    String currentttime = createtime(mediaPlayer.getCurrentPosition());
+                                    txtstart.setText(currentttime);
+                                }
+                                handler.postDelayed(this, delay);
+                            }
+                        }, delay);
+                        seek();
   /*                  myposition=position;
                     Uri uri= Uri.parse(songs.get(myposition).toString());
                     mediaPlayer=MediaPlayer.create(SavedRecordingList.this,uri);
@@ -564,9 +600,10 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
                     intent.putExtra("list", songs);
                     startActivity(intent);*/
 
-                }
-            });
-        }
+                    }
+                });
+            }
+
         else {
             norecord.setVisibility(View.VISIBLE);
         }
@@ -595,17 +632,12 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
         if (mediaPlayer.isPlaying()){
             mediaPlayer.stop();
             mediaPlayer.release();
+            finish();
+
         }
-        Intent intent1 = getIntent();
-        int back = intent1.getIntExtra("back", 0);
-        if (back == 1) {
-            Intent intent = new Intent(SavedRecordingList.this, HomeActivity.class);
-            startActivity(intent);
-            finish();
-        } else if (back == 2) {
-            Intent intent = new Intent(SavedRecordingList.this, RecordingScreen.class);
-            startActivity(intent);
-            finish();
+        else
+        {
+            super.onBackPressed();
         }
     }
 
@@ -616,8 +648,8 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             //Toast.makeText(this, file + "File Exist", Toast.LENGTH_SHORT).show();
             file.delete();
             songs.remove(pos);
-            customAdapter.notifyDataSetChanged();
 
+            customAdapter.notifyDataSetChanged();
         } else {
                 Toast.makeText(this, "File Does not Exist", Toast.LENGTH_SHORT).show();
             }

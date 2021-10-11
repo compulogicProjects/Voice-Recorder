@@ -165,8 +165,6 @@ public class RecordingScreen extends AppCompatActivity {
         backbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent= new Intent(RecordingScreen.this,HomeActivity.class);
-                startActivity(intent);
                 finish();
             }
         });
@@ -345,10 +343,4 @@ public class RecordingScreen extends AppCompatActivity {
         return all_permissions;
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent intent= new Intent(RecordingScreen.this,HomeActivity.class);
-        startActivity(intent);
-        finish();
-    }
 }

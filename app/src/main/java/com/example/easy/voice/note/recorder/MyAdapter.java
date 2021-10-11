@@ -2,6 +2,8 @@ package com.example.easy.voice.note.recorder;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 
 import com.example.easy.R;
 
@@ -45,10 +48,11 @@ public class MyAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.list_item, null, true);
 
-        ImageView playimg = (ImageView) view.findViewById(R.id.vr_list_icon);
         TextView songname = (TextView) view.findViewById(R.id.vr_list_name);
         TextView datetime = (TextView) view.findViewById(R.id.vr_list_date);
         ImageView deleteimg= (ImageView) view.findViewById(R.id.vr_delete_icon);
+        ImageView shareimg= (ImageView) view.findViewById(R.id.vr_share);
+
 
         deleteimg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,16 +100,38 @@ public class MyAdapter extends ArrayAdapter<String> {
              */
             }
         });
+        shareimg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*Uri uri = Uri.fromFile(new File(Environment.getExternalStorageDirectory().
+                        getPath()+"/Voice Recorder/"+Songname[position]+".mp3"));
+                Intent share = new Intent(Intent.ACTION_SEND);
+                share.setType("audio/*");
+                share.putExtra(Intent.EXTRA_STREAM, uri);
+                context.startActivity(Intent.createChooser(share, "Shared Recording"));*/
+
+                File file = new File(Environment.getExternalStorageDirectory().getPath()+
+                        "/Voice Recorder/"+Songname[position]+".mp3");
+                Intent install = new Intent(Intent.ACTION_SEND);
+                install.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                install.setType("audio/*");
+                Uri apkURI = FileProvider.getUriForFile(
+                        context,
+                        context.getApplicationContext()
+                                .getPackageName() + ".provider", file);
+                install.putExtra(Intent.EXTRA_STREAM,apkURI);
 
 
-        playimg.setImageResource(playimage[position]);
+                context.startActivity(Intent.createChooser(install,"Shared Recording"));
+
+            }
+        });
+
         songname.setText(Songname[position]);
         datetime.setText(lastdatemodified[position]);
         deleteimg.setImageResource(deleteimage[position]);
 
         return view;
     }
-
-
 
 }
