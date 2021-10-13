@@ -191,8 +191,8 @@ public class RecordingScreen extends AppCompatActivity {
                 timeWhenStopped=0;
                 chronometer.stop();
                 File file= new File(Path);
-                    file.delete();
-                    Toast.makeText(RecordingScreen.this, file + "Deleted", Toast.LENGTH_SHORT).show();
+                file.delete();
+                Toast.makeText(RecordingScreen.this, file + "Deleted", Toast.LENGTH_SHORT).show();
                 cancel.setVisibility(View.INVISIBLE);
                 saveimage.setVisibility(View.INVISIBLE);
                 titlerecording.setText("Tap On Start Button to Record!");
@@ -212,14 +212,14 @@ public class RecordingScreen extends AppCompatActivity {
                     //getPermission();
                 }
 
-                 if (startrecording==false) {
+                if (startrecording==false) {
                     start_rec();
                     image.setImageResource(R.drawable.ic_baseline_pause);
                     starttext.setText("Stop");
                     saveimage.setVisibility(View.VISIBLE);
                     cancel.setVisibility(View.VISIBLE);
                     chronometer.setBase(SystemClock.elapsedRealtime()+timeWhenStopped);
-                     chronometer.start();
+                    chronometer.start();
                     titlerecording.setText("Recording........");
                     startrecording = true;
                 }
@@ -260,7 +260,7 @@ public class RecordingScreen extends AppCompatActivity {
             chronometer.stop();
             titlerecording.setText("Pause");
 
-    }
+        }
     }
     // Start Rec
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -292,7 +292,7 @@ public class RecordingScreen extends AppCompatActivity {
             mediaStorageDir.mkdir(); // create new directory
             if (mediaStorageDir.isDirectory()) // when dir is created
             {
-              //  Log.d(TAG, "Dir is created successfullly");
+                //  Log.d(TAG, "Dir is created successfullly");
                 Toast.makeText(RecordingScreen.this, "Dir is created Sucessfully" + mediaStorageDir.toString(), Toast.LENGTH_SHORT).show();
 
             } else {
@@ -314,7 +314,7 @@ public class RecordingScreen extends AppCompatActivity {
 
     private void getMicrophonePermission(){
         if (ContextCompat.checkSelfPermission(this,Manifest.permission.RECORD_AUDIO)==
-            PackageManager.PERMISSION_DENIED){
+                PackageManager.PERMISSION_DENIED){
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.RECORD_AUDIO},RecordAudioCode);
         }
 

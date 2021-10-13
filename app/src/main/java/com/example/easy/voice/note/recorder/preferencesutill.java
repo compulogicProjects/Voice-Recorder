@@ -10,12 +10,12 @@ public class preferencesutill {
     private static final String TAG = preferencesutill.class.getSimpleName();
 
 
-    public static void setPreviousSongInSharedPrefs(Context context, Uri songName, String song) {
+    public static void setPreviousSongInSharedPrefs(Context context, Uri songName, int seekprogres) {
         try {
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor sharedPrefsEditor = sharedPrefs.edit();
             sharedPrefsEditor.putString("PREVIOUS_SONG" , String.valueOf(songName));
-            sharedPrefsEditor.putString("song",song);
+            sharedPrefsEditor.putInt("seekprogress",seekprogres);
             sharedPrefsEditor.apply();
         } catch (Exception e) {
             e.printStackTrace();
@@ -23,16 +23,24 @@ public class preferencesutill {
     }
 
     /* get store previous song*/
-    public static String getPreviousSongFromSharedPrefs(Context context) {
-        String previousSong = "";
+    public static Uri getPreviousSongFromSharedPrefs(Context context) {
+        Uri previoussong = null;
         try {
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-            previousSong = sharedPrefs.getString("PREVIOUS_SONG" , null);
-            String songname=sharedPrefs.getString("song",null);
-            return previousSong;
+            previoussong=Uri.parse(sharedPrefs.getString("PREVIOUS_SONG",null));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return previousSong;
+        return previoussong;
+    }
+    public static int getseekprogressFromSharedPrefs(Context context) {
+        int seekprogress = 0;
+        try {
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            seekprogress=sharedPrefs.getInt("seekprogress",0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return seekprogress;
     }
 }
