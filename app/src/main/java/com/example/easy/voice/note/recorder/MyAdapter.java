@@ -65,6 +65,7 @@ public class MyAdapter extends ArrayAdapter<String> {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 deleteClisckLisner.ondeleteclick(position);
+                                notifyDataSetChanged();
 
                             }
                         })
