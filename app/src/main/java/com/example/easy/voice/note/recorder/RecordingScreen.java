@@ -10,18 +10,21 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -89,8 +92,6 @@ public class RecordingScreen extends AppCompatActivity {
 
         saverecording=findViewById(R.id.saverecording);
 
-        create_VC_Recorder_Dir();
-
         getPermission();
 
         // Save Button
@@ -104,7 +105,8 @@ public class RecordingScreen extends AppCompatActivity {
                 LayoutInflater li = LayoutInflater.from(RecordingScreen.this);
                 View view1 = li.inflate(R.layout.save_dialog, null);
 
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RecordingScreen.this);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                        RecordingScreen.this);
 
                 // set prompts.xml to alertdialog builder
                 alertDialogBuilder.setView(view1);
@@ -208,26 +210,92 @@ public class RecordingScreen extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
-                if (isMicrophonePresent()){
-                    //getPermission();
-                }
+                if (all_permissions) {
 
-                if (startrecording==false) {
-                    start_rec();
-                    image.setImageResource(R.drawable.ic_baseline_pause);
-                    starttext.setText("Stop");
-                    saveimage.setVisibility(View.VISIBLE);
-                    cancel.setVisibility(View.VISIBLE);
-                    chronometer.setBase(SystemClock.elapsedRealtime()+timeWhenStopped);
-                    chronometer.start();
-                    titlerecording.setText("Recording........");
-                    startrecording = true;
-                }
-                else if(startrecording==true){
-                    if (pause==true){
-                        resume_rec();
+                    if (!startrecording) {
+                        start_rec();
+                        image.setImageResource(R.drawable.ic_baseline_pause);
+                        starttext.setText("Stop");
+                        /*saveimage.setVisibility(View.VISIBLE);
+                        cancel.setVisibility(View.VISIBLE);*/
+                        chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                        chronometer.start();
+                        titlerecording.setText("Recording........");
+                        startrecording = true;
+                    } else if (startrecording) {
+                        if(Build.VERSION.SDK_INT < 26) {
+                            mediaRecorder.pause();
+                            timeWhenStopped = SystemClock.elapsedRealtime();
+                            chronometer.stop();
+                            LayoutInflater li = LayoutInflater.from(RecordingScreen.this);
+                            View view1 = li.inflate(R.layout.save_dialog, null);
+
+                            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                                    RecordingScreen.this);
+
+                            // set prompts.xml to alertdialog builder
+                            alertDialogBuilder.setView(view1);
+
+                            final EditText userInput = (EditText) view1.findViewById(R.id.editTextDialogUserInput);
+                            Button cancel1 = (Button) view1.findViewById(R.id.save_cancel);
+                            Button ok = (Button) view1.findViewById(R.id.save_ok);
+
+
+                            // set dialog message
+                            alertDialogBuilder
+                                    .setCancelable(false);
+
+                            // create alert dialog
+                            final AlertDialog alertDialog = alertDialogBuilder.create();
+                            cancel1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mediaRecorder.resume();
+                                    long intervalOnPause = (SystemClock.elapsedRealtime() - timeWhenStopped);
+                                    chronometer.setBase( chronometer.getBase() + intervalOnPause );
+                                    chronometer.start();
+                                    alertDialog.dismiss();
+                                }
+                            });
+                            ok.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    String newFileName = userInput.getText().toString();
+                                    if (newFileName != null && newFileName.trim().length() > 0) {
+                                        File newFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Voice Recorder/"+newFileName+".mp3");
+                                        File oldFile = new File(Path);
+                                        oldFile.renameTo(newFile);
+                                        Toast.makeText(RecordingScreen.this, newFile+"Saved!", Toast.LENGTH_SHORT).show();
+                                        alertDialog.dismiss();
+                                        titlerecording.setText("Tap On Start Button to Record!");
+                                        image.setImageResource(R.drawable.ic_baseline_keyboard_voice);
+                                        starttext.setText("Start");
+                                        startrecording=false;
+                                        mediaRecorder.stop();
+                                        mediaRecorder.reset();
+                                        mediaRecorder.release();
+                                        mediaRecorder = null;
+                                        chronometer.setBase(SystemClock.elapsedRealtime());
+                                        timeWhenStopped=0;
+                                        chronometer.stop();
+                                        cancel.setVisibility(View.INVISIBLE);
+                                        saveimage.setVisibility(View.INVISIBLE);
+                                    }
+                                }
+                            });
+                            // show it
+                            alertDialog.show();
+                        }
+                        else if (pause) {
+                            resume_rec();
+                        } else {
+                            pause_rec();
+                        }
                     }
-                    else {pause_rec();}
+                }
+                else{
+                    Toast.makeText(RecordingScreen.this, "Permission Required", Toast.LENGTH_SHORT).show();
+                    getPermission();
                 }
             }
         });
@@ -268,12 +336,8 @@ public class RecordingScreen extends AppCompatActivity {
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        if(Build.VERSION.SDK_INT < 26) {
             mediaRecorder.setOutputFile(Path);
-        }
-        else{
-            mediaRecorder.setOutputFile(Path);
-        }
+
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         try {
             mediaRecorder.prepare();
@@ -324,9 +388,11 @@ public class RecordingScreen extends AppCompatActivity {
         Dexter.withContext(RecordingScreen.this)
                 .withPermissions(VoiceRecorderPermissions)
                 .withListener(new MultiplePermissionsListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                         if (multiplePermissionsReport.areAllPermissionsGranted()) {
+                            all_permissions=true;         create_VC_Recorder_Dir();
 
                         }
                         else if (multiplePermissionsReport.isAnyPermissionPermanentlyDenied()) {
@@ -341,6 +407,11 @@ public class RecordingScreen extends AppCompatActivity {
                     }
                 }).check();
         return all_permissions;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
 }

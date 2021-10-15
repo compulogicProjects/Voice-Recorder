@@ -11,14 +11,13 @@ public class preferencesutill {
 
 
     public static void setPreviousSongInSharedPrefs(Context context, String songUri,
-                                                    int seekprogres,boolean pref,String song) {
+                                                    int seekprogres,boolean pref) {
         try {
             SharedPreferences sharedPrefs = context.getSharedPreferences(TAG,Context.MODE_PRIVATE);
             SharedPreferences.Editor sharedPrefsEditor = sharedPrefs.edit();
-            sharedPrefsEditor.putString("PREVIOUS_SONG" , songUri.toString());
+            sharedPrefsEditor.putString("PREVIOUS_SONG" , songUri);
             sharedPrefsEditor.putInt("seekprogress",seekprogres);
             sharedPrefsEditor.putBoolean("pref",pref);
-            sharedPrefsEditor.putString("song",song);
             sharedPrefsEditor.apply();
         } catch (Exception e) {
             e.printStackTrace();
@@ -39,7 +38,7 @@ public class preferencesutill {
     public static int getseekprogressFromSharedPrefs(Context context) {
         int seekprogress = 0;
         try {
-            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            SharedPreferences sharedPrefs = context.getSharedPreferences(TAG,Context.MODE_PRIVATE);
             seekprogress=sharedPrefs.getInt("seekprogress",0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -49,8 +48,8 @@ public class preferencesutill {
     public static boolean getpref(Context context){
         boolean pref=true;
         try {
-            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-            pref=sharedPrefs.getBoolean("pref",true);
+            SharedPreferences sharedPrefs = context.getSharedPreferences(TAG,Context.MODE_PRIVATE);
+            pref=sharedPrefs.getBoolean("pref",false);
         } catch (Exception e) {
             e.printStackTrace();
         }
