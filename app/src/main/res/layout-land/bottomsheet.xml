@@ -12,15 +12,15 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:text="Recording_00"
-        android:textSize="20dp" />
+        android:textSize="10dp" />
     <ImageView
         android:id="@+id/micpic"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:layout_gravity="center"
         android:src="@drawable/ic_baseline_keyboard_voice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         app:tint="@color/colorPrimary">
 
     </ImageView>
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:text="00:00"
-            android:textSize="15dp" />
+            android:textSize="10dp" />
 
         <TextView
             android:id="@+id/textstop"
@@ -58,7 +58,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:text="00:00"
-            android:textSize="15dp" />
+            android:textSize="10dp" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -70,8 +70,8 @@
 
         <ImageView
             android:id="@+id/previous"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_centerVertical="true"
             android:layout_marginRight="20dp"
             android:layout_toLeftOf="@+id/btnstartstop"
@@ -80,23 +80,23 @@
 
         <RelativeLayout
             android:id="@+id/btnstartstop"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_centerHorizontal="true"
             android:background="@drawable/start_rec_background">
 
             <ImageView
                 android:id="@+id/startstopbtn"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_centerInParent="true"
                 android:src="@drawable/ic_baseline_pause" />
         </RelativeLayout>
 
         <ImageView
             android:id="@+id/next"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="20dp"
             android:layout_toRightOf="@+id/btnstartstop"

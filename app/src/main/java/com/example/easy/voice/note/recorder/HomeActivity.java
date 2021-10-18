@@ -56,7 +56,6 @@ public class HomeActivity extends AppCompatActivity {
         AlertDialog.Builder builder= new AlertDialog.Builder(this);
         ViewGroup viewGroup= findViewById(android.R.id.content);
         View view= LayoutInflater.from(this).inflate(R.layout.backscreen,viewGroup,false);
-        builder.setCancelable(false);
         builder.setView(view);
         Button btncancel= view.findViewById(R.id.btncancel);
         Button btnexit= view.findViewById(R.id.btnexit);

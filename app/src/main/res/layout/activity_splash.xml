@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <LinearLayout
-    android:background="#F8243B"
+    android:background="@color/colorPrimary"
     android:gravity="center"
     android:orientation="vertical"
     tools:context=".voice.note.recorder.SplashScreen"

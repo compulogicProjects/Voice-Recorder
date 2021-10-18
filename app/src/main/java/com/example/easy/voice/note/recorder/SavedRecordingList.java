@@ -1,9 +1,11 @@
 package com.example.easy.voice.note.recorder;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
@@ -76,7 +78,8 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
     SeekBar seekBar1;
     ImageView startstopbn;
     RelativeLayout bottomlayout;
-    int seekpreference;
+    LinearLayout deleteall;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +98,7 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
         textstop=findViewById(R.id.textstop);
         bottomlinear=findViewById(R.id.bottomlinear);
         bottomlayout= findViewById(R.id.bottomlayout);
+        deleteall=findViewById(R.id.delteall);
         handler= new Handler();
         mediaPlayer= new MediaPlayer();
         pref=preferencesutill.getpref(this);
@@ -124,7 +128,53 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
       /*  sharedPreferences= getSharedPreferences(TAG,MODE_PRIVATE);
         pref= sharedPreferences.getBoolean("pref",true);
         Toast.makeText(SavedRecordingList.this, pref+"", Toast.LENGTH_SHORT).show();*/
+        deleteall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(songs.size()>0) {
+                    AlertDialog.Builder builder= new AlertDialog.Builder(SavedRecordingList.this);
+                    builder.setTitle("Confirmation")
+                            .setMessage("Are You Sure You Want To Delete All Files??")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
+                                    if (pref){
+                                        preferencesutill.clearpref(SavedRecordingList.this);
+                                    }
+                                    for (int j=0;j<songs.size();j++){
+                                        File file = songs.get(j);
+                                        Toast.makeText(SavedRecordingList.this, file+"", Toast.LENGTH_SHORT).show();
+                                        //songs.remove(i);
+                                        file.delete();
+                                    }
+                                    Toast.makeText(SavedRecordingList.this, "All deleted", Toast.LENGTH_LONG).show();
+                                    songs.clear();
+                                    customAdapter.notifyDataSetChanged();
+                                    listView.setVisibility(View.INVISIBLE);
+                                    adapter();
+                    /*customAdapter.clear();
+                    customAdapter.notifyDataSetChanged();
+                    adapter();*/
+
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            });
+                    AlertDialog dialog= builder.create();
+                    dialog.show();
+
+                } else {
+                    Toast.makeText(SavedRecordingList.this, "There is no Recording to delete", Toast.LENGTH_LONG).show();
+                }
+
+
+            }
+        });
         if (!songs.isEmpty()){
         Uri uri = Uri.parse(songs.get(myposition).toString());
         mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
@@ -228,21 +278,26 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
         backimage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mediaPlayer!=null){
-                    int seekbarval= mediaPlayer.getCurrentPosition();
-                    String str=songs.get(myposition).toString();
-                    //Uri uri= Uri.parse(songs.get(myposition).toString());
-                    //Toast.makeText(SavedRecordingList.this, uri+"", Toast.LENGTH_SHORT).show();
-                    preferencesutill.setPreviousSongInSharedPrefs(SavedRecordingList.this,
-                            str,seekbarval,true);
+                    if (mediaPlayer != null) {
+                        if (mediaPlayer.isPlaying()) {
+                        int seekbarval = mediaPlayer.getCurrentPosition();
+                        String str = songs.get(myposition).toString();
+                        //Uri uri= Uri.parse(songs.get(myposition).toString());
+                        //Toast.makeText(SavedRecordingList.this, uri+"", Toast.LENGTH_SHORT).show();
+                        preferencesutill.setPreviousSongInSharedPrefs(SavedRecordingList.this,
+                                str, seekbarval, true);
                   /*  sharedPreferences= getSharedPreferences(TAG,MODE_PRIVATE);
                     SharedPreferences.Editor editor= sharedPreferences.edit();
                     editor.putString("str",str);
                     editor.putInt("seekbarval",seekbarval);
                     editor.putBoolean("pref",pref);
                     editor.apply();*/
-                    mediaPlayer.stop();
-                    finish();
+                        mediaPlayer.stop();
+                        finish();
+                    }
+                        else{
+                            finish();
+                        }
                 }
                 else{
                 finish();
@@ -738,6 +793,9 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
             }
 
         else {
+            if (pref) {
+                preferencesutill.clearpref(this);
+            }
             norecord.setVisibility(View.VISIBLE);
             bottomlayout.setVisibility(View.INVISIBLE);
         }
@@ -763,25 +821,44 @@ public class SavedRecordingList extends AppCompatActivity implements DeleteClisc
 
     @Override
     public void onBackPressed() {
-        if (mediaPlayer.isPlaying()){
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            finish();
+            if (mediaPlayer != null) {
+                if (mediaPlayer.isPlaying()) {
+                int seekbarval = mediaPlayer.getCurrentPosition();
+                String str = songs.get(myposition).toString();
+                preferencesutill.setPreviousSongInSharedPrefs(SavedRecordingList.this,
+                        str, seekbarval, true);
+                mediaPlayer.stop();
+                finish();
 
+            }
+                else{
+                    finish();
+                }
         }
         else
         {
-            super.onBackPressed();
+            finish();
         }
     }
 
     @Override
     public void ondeleteclick(int pos) {
         File file = songs.get(pos);
-        if (file.exists()) {
-            //file.delete();
+        boolean getpref=preferencesutill.getpref(SavedRecordingList.this);
+        if (getpref) {
+            String str = preferencesutill.getPreviousSongFromSharedPrefs(SavedRecordingList.this);
+            File filepre = new File(str);
+            if (file.equals(filepre)) {
+                preferencesutill.clearpref(SavedRecordingList.this);
+                file.delete();
+                songs.remove(pos);
+                adapter();
+            }
+        }
+        else if (file.exists()) {
+            file.delete();
             songs.remove(pos);
-            customAdapter.notifyDataSetChanged();
+            adapter();
             //Toast.makeText(this, customAdapter.getItem(pos)+"", Toast.LENGTH_SHORT).show();
 
         } else {

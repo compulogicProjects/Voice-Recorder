@@ -65,4 +65,10 @@ public class preferencesutill {
         }
         return pre;
     }
+    public static void clearpref(Context context){
+        SharedPreferences sharedPreferences= context.getSharedPreferences(TAG,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor= sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+    }
 }

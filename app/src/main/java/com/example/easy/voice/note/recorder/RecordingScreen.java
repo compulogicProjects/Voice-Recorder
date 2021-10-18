@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
@@ -175,32 +176,51 @@ public class RecordingScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(RecordingScreen.this, SavedRecordingList.class);
-                intent.putExtra("back",2);
                 startActivity(intent);
-                finish();
 
             }
         });
         // Delete Current Recording
         cancel.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
-                mediaRecorder.stop();
-                mediaRecorder.reset();
-                mediaRecorder.release();
-                mediaRecorder = null;
-                chronometer.setBase(SystemClock.elapsedRealtime());
-                timeWhenStopped=0;
-                chronometer.stop();
-                File file= new File(Path);
-                file.delete();
-                Toast.makeText(RecordingScreen.this, file + "Deleted", Toast.LENGTH_SHORT).show();
-                cancel.setVisibility(View.INVISIBLE);
-                saveimage.setVisibility(View.INVISIBLE);
-                titlerecording.setText("Tap On Start Button to Record!");
-                image.setImageResource(R.drawable.ic_baseline_keyboard_voice);
-                starttext.setText("Start");
-                startrecording=false;
+                pause_rec();
+                AlertDialog.Builder builder= new AlertDialog.Builder(RecordingScreen.this);
+                builder.setTitle("Confirmation")
+                        .setMessage("Are You Sure You Want To Delete This Recording??")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mediaRecorder.stop();
+                                mediaRecorder.reset();
+                                mediaRecorder.release();
+                                mediaRecorder = null;
+                                chronometer.setBase(SystemClock.elapsedRealtime());
+                                timeWhenStopped=0;
+                                chronometer.stop();
+                                File file= new File(Path);
+                                file.delete();
+                                Toast.makeText(RecordingScreen.this, file + "Deleted", Toast.LENGTH_SHORT).show();
+                                cancel.setVisibility(View.INVISIBLE);
+                                saveimage.setVisibility(View.INVISIBLE);
+                                titlerecording.setText("Tap On Start Button to Record!");
+                                image.setImageResource(R.drawable.ic_baseline_keyboard_voice);
+                                starttext.setText("Start");
+                                startrecording=false;
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @RequiresApi(api = Build.VERSION_CODES.N)
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                                resume_rec();
+                            }
+                        });
+                AlertDialog dialog= builder.create();
+                dialog.show();
+
                 //recordingSampler.stopRecording();
             }
         });
@@ -211,19 +231,18 @@ public class RecordingScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (all_permissions) {
-
-                    if (!startrecording) {
-                        start_rec();
-                        image.setImageResource(R.drawable.ic_baseline_pause);
-                        starttext.setText("Stop");
+                    if(Build.VERSION.SDK_INT < 26) {
+                        if (!startrecording) {
+                            start_rec();
+                            image.setImageResource(R.drawable.ic_baseline_pause);
+                            starttext.setText("Stop");
                         /*saveimage.setVisibility(View.VISIBLE);
                         cancel.setVisibility(View.VISIBLE);*/
-                        chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-                        chronometer.start();
-                        titlerecording.setText("Recording........");
-                        startrecording = true;
-                    } else if (startrecording) {
-                        if(Build.VERSION.SDK_INT < 26) {
+                            chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                            chronometer.start();
+                            titlerecording.setText("Recording........");
+                            startrecording = true;
+                        } else if (startrecording) {
                             mediaRecorder.pause();
                             timeWhenStopped = SystemClock.elapsedRealtime();
                             chronometer.stop();
@@ -250,10 +269,20 @@ public class RecordingScreen extends AppCompatActivity {
                             cancel1.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    mediaRecorder.resume();
-                                    long intervalOnPause = (SystemClock.elapsedRealtime() - timeWhenStopped);
-                                    chronometer.setBase( chronometer.getBase() + intervalOnPause );
-                                    chronometer.start();
+                                    mediaRecorder.stop();
+                                    mediaRecorder.reset();
+                                    mediaRecorder.release();
+                                    mediaRecorder = null;
+                                    chronometer.setBase(SystemClock.elapsedRealtime());
+                                    timeWhenStopped=0;
+                                    chronometer.stop();
+                                    File file= new File(Path);
+                                    file.delete();
+                                    Toast.makeText(RecordingScreen.this, file + "Deleted", Toast.LENGTH_SHORT).show();
+                                    titlerecording.setText("Tap On Start Button to Record!");
+                                    image.setImageResource(R.drawable.ic_baseline_keyboard_voice);
+                                    starttext.setText("Start");
+                                    startrecording=false;
                                     alertDialog.dismiss();
                                 }
                             });
@@ -262,30 +291,47 @@ public class RecordingScreen extends AppCompatActivity {
                                 public void onClick(View v) {
                                     String newFileName = userInput.getText().toString();
                                     if (newFileName != null && newFileName.trim().length() > 0) {
-                                        File newFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Voice Recorder/"+newFileName+".mp3");
+                                        File newFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Voice Recorder/" + newFileName + ".mp3");
                                         File oldFile = new File(Path);
                                         oldFile.renameTo(newFile);
-                                        Toast.makeText(RecordingScreen.this, newFile+"Saved!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(RecordingScreen.this, newFile + "Saved!", Toast.LENGTH_SHORT).show();
                                         alertDialog.dismiss();
                                         titlerecording.setText("Tap On Start Button to Record!");
                                         image.setImageResource(R.drawable.ic_baseline_keyboard_voice);
                                         starttext.setText("Start");
-                                        startrecording=false;
+                                        startrecording = false;
                                         mediaRecorder.stop();
                                         mediaRecorder.reset();
                                         mediaRecorder.release();
                                         mediaRecorder = null;
                                         chronometer.setBase(SystemClock.elapsedRealtime());
-                                        timeWhenStopped=0;
+                                        timeWhenStopped = 0;
                                         chronometer.stop();
                                         cancel.setVisibility(View.INVISIBLE);
                                         saveimage.setVisibility(View.INVISIBLE);
+                                    }
+                                    else{
+                                        Toast.makeText(RecordingScreen.this,"Please Enter File Name",
+                                                Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
                             // show it
                             alertDialog.show();
                         }
+                    }
+                       else {
+                            if (!startrecording) {
+                                start_rec();
+                                image.setImageResource(R.drawable.ic_baseline_pause);
+                                starttext.setText("Pause");
+                                saveimage.setVisibility(View.VISIBLE);
+                                cancel.setVisibility(View.VISIBLE);
+                                chronometer.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+                                chronometer.start();
+                                titlerecording.setText("Recording........");
+                                startrecording = true;
+                            }
                         else if (pause) {
                             resume_rec();
                         } else {
