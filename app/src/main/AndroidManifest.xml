@@ -15,7 +15,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -24,22 +23,27 @@
         android:theme="@style/Theme.Easyvoicenoterecorder"
         android:requestLegacyExternalStorage="true">
         <activity
+            android:configChanges="orientation|keyboardHidden|screenLayout"
             android:theme="@style/custom_theme"
             android:name=".voice.note.recorder.PlayRecording"
             android:exported="true" />
         <activity
+            android:configChanges="orientation|keyboardHidden|screenLayout"
             android:name=".voice.note.recorder.SavedRecordingList"
             android:exported="true"
             android:theme="@style/custom_theme" />
         <activity
+            android:configChanges="orientation|keyboardHidden|screenLayout"
             android:name=".voice.note.recorder.RecordingScreen"
             android:exported="true"
             android:theme="@style/custom_theme" />
         <activity
+            android:configChanges="orientation|keyboardHidden|screenLayout"
             android:name=".voice.note.recorder.HomeActivity"
             android:exported="true"
             android:theme="@style/custom_theme" />
         <activity
+            android:configChanges="orientation|keyboardHidden|screenLayout"
             android:name=".voice.note.recorder.SplashScreen"
             android:exported="true">
             <intent-filter>

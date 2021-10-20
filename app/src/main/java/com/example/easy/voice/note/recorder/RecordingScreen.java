@@ -438,7 +438,8 @@ public class RecordingScreen extends AppCompatActivity {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                         if (multiplePermissionsReport.areAllPermissionsGranted()) {
-                            all_permissions=true;         create_VC_Recorder_Dir();
+                            all_permissions=true;
+                            create_VC_Recorder_Dir();
 
                         }
                         else if (multiplePermissionsReport.isAnyPermissionPermanentlyDenied()) {
