@@ -93,13 +93,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <ImageView
-            android:layout_marginRight="20dp"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/btnstartstop"
             android:id="@+id/previous"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:layout_toLeftOf="@+id/btnstartstop"
             android:src="@drawable/ic_baseline_skip_previous"
             app:tint="@color/colorPrimary" />
 
@@ -118,12 +119,12 @@
         </RelativeLayout>
 
         <ImageView
-            android:layout_marginLeft="20dp"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/btnstartstop"
             android:id="@+id/next"
             android:layout_width="70dp"
             android:layout_height="70dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@+id/btnstartstop"
             android:src="@drawable/ic_baseline_skip_next"
             app:tint="@color/colorPrimary" />
     </RelativeLayout>

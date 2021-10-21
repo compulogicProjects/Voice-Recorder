@@ -1,4 +1,4 @@
-package com.example.easy.voice.note.recorder;
+package com.easy.voice.note.recorder;
 
 import androidx.appcompat.app.AppCompatActivity;
 
